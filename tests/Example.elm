@@ -33,6 +33,18 @@ formattingTests =
                     |> Numeral.format
                     |> Expect.equal "1,000.23"
             )
+        , test "basic float with no decimal part" <|
+            (\_ ->
+                Numeral.fromFloat 1000
+                    |> Numeral.format
+                    |> Expect.equal "1,000"
+            )
+        , test "basic float with long decimal part" <|
+            (\_ ->
+                Numeral.fromFloat 1.1234567
+                    |> Numeral.format
+                    |> Expect.equal "1.1234567"
+            )
         , test "float less than 1000" <|
             (\_ ->
                 Numeral.fromFloat 123.23
@@ -68,13 +80,12 @@ formattingTests =
 
 localeTests : Test
 localeTests =
-    skip <|
-        describe "Locale"
-            [ test "basic locale format" <|
-                (\_ ->
-                    Numeral.fromFloat 1234567.23
-                        |> Numeral.withLocale Locale.CS
-                        |> Numeral.format
-                        |> Expect.equal "1 234 567,23"
-                )
-            ]
+    describe "Locale"
+        [ test "basic locale format" <|
+            (\_ ->
+                Numeral.fromFloat 1234567.23
+                    |> Numeral.withLocale Locale.CS
+                    |> Numeral.format
+                    |> Expect.equal "1 234 567,23"
+            )
+        ]

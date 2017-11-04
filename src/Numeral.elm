@@ -8,6 +8,7 @@ type alias Settings =
     { localeSettings : Locale.Settings
     , isNegative : Bool
     , absoluteValue : Float
+    , decimalPlaces : Int
     }
 
 
@@ -43,16 +44,24 @@ withLocale locale (Numeral settings) =
 
 
 format : Numeral -> String
-format (Numeral { localeSettings, absoluteValue, isNegative }) =
+format (Numeral { localeSettings, absoluteValue, isNegative, decimalPlaces }) =
     let
-        ( int, decimal ) =
-            ( truncate absoluteValue, absoluteValue - toFloat (truncate absoluteValue) )
+        splitted =
+            String.split "." <| toString absoluteValue
 
-        decimalString =
-            (toString decimal) |> String.dropLeft 2 |> String.left 2
+        ( int, decimal ) =
+            case splitted of
+                [ i, d ] ->
+                    ( i, d )
+
+                [ i ] ->
+                    ( i, "" )
+
+                _ ->
+                    ( "", "" )
 
         integralString =
-            toString int
+            int
                 |> String.reverse
                 |> String.toList
                 |> greedyGroupsOf 3
@@ -66,7 +75,7 @@ format (Numeral { localeSettings, absoluteValue, isNegative }) =
             else
                 ""
     in
-        if String.isEmpty decimalString then
+        if String.isEmpty decimal then
             sign ++ integralString
         else
-            sign ++ integralString ++ (String.fromChar localeSettings.decimalsSeparator) ++ decimalString
+            sign ++ integralString ++ (String.fromChar localeSettings.decimalsSeparator) ++ decimal
